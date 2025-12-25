@@ -501,7 +501,8 @@
                     d1, d2, reductionRatio, beltLength, beltLengthM, beltVelocity,
                     angleOfLapDeg, angleOfLapRad, loadFactor, designPower, T1, T2, tensionRatio,
                     sigmaMax, lifeHours, lifeYears, inputTorque, outputTorque, 
-                    inputShaftDiaStandard, outputShaftDiaStandard, inputKey, outputKey
+                    inputShaftDia, outputShaftDia, inputShaftDiaStandard, outputShaftDiaStandard, 
+                    inputKey, outputKey, requiredArea
                 };
 
                 displayResults(results);
@@ -535,11 +536,11 @@
                         <tr style="border-top: 2px solid #2a5caa;"><td><b style="color:#2a5caa;">Maximum Stress</b></td><td><b style="color:#2a5caa;">${r.sigmaMax.toFixed(4)}</b></td><td>N/mm²</td></tr>
                         <tr><td style="color: #28a745;"><b>Belt Life (Hours)</b></td><td style="color: #28a745;"><b>${r.lifeHours.toFixed(2)}</b></td><td>hrs</td></tr>
                         <tr><td style="color: #28a745;"><b>Belt Life (Years)</b></td><td style="color: #28a745;"><b>${r.lifeYears.toFixed(4)}</b></td><td>yrs</td></tr>
-                        <tr style="border-top: 2px solid #2a5caa;"><td><b style="color:#2a5caa;">Input Shaft Diameter (calc)</b></td><td><b style="color:#2a5caa;">${inputShaftDia.toFixed(2)}</b></td><td>mm</td></tr>
+                        <tr style="border-top: 2px solid #2a5caa;"><td><b style="color:#2a5caa;">Input Shaft Diameter (calc)</b></td><td><b style="color:#2a5caa;">${r.inputShaftDia.toFixed(2)}</b></td><td>mm</td></tr>
                         <tr><td><b style="color:#2a5caa;">Input Shaft Diameter (std)</b></td><td><b style="color:#2a5caa;">${r.inputShaftDiaStandard}</b></td><td>mm</td></tr>
                         <tr><td><b style="color:#2a5caa;">Input Torque</b></td><td><b style="color:#2a5caa;">${r.inputTorque.toFixed(2)}</b></td><td>Nm</td></tr>
                         <tr><td><b style="color:#2a5caa;">Input Taper Key (b×t)</b></td><td><b style="color:#2a5caa;">${r.inputKey ? r.inputKey.width+'×'+r.inputKey.thickness : 'N/A'}</b></td><td>mm</td></tr>
-                        <tr style="border-top: 2px solid #2a5caa;"><td><b style="color:#2a5caa;">Output Shaft Diameter (calc)</b></td><td><b style="color:#2a5caa;">${outputShaftDia.toFixed(2)}</b></td><td>mm</td></tr>
+                        <tr style="border-top: 2px solid #2a5caa;"><td><b style="color:#2a5caa;">Output Shaft Diameter (calc)</b></td><td><b style="color:#2a5caa;">${r.outputShaftDia.toFixed(2)}</b></td><td>mm</td></tr>
                         <tr><td><b style="color:#2a5caa;">Output Shaft Diameter (std)</b></td><td><b style="color:#2a5caa;">${r.outputShaftDiaStandard}</b></td><td>mm</td></tr>
                         <tr><td><b style="color:#2a5caa;">Output Torque</b></td><td><b style="color:#2a5caa;">${r.outputTorque.toFixed(2)}</b></td><td>Nm</td></tr>
                         <tr><td><b style="color:#2a5caa;">Output Taper Key (b×t)</b></td><td><b style="color:#2a5caa;">${r.outputKey ? r.outputKey.width+'×'+r.outputKey.thickness : 'N/A'}</b></td><td>mm</td></tr>
@@ -560,7 +561,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td>Tensile Stress</td><td>${(r.T1-r.T2/requiredArea).toFixed(4)}</td><td>N/mm²</td></tr>
+                        <tr><td>Tensile Stress</td><td>${((r.T1-r.T2)/r.requiredArea).toFixed(4)}</td><td>N/mm²</td></tr>
                         <tr><td>Centrifugal Stress</td><td>${((r.material.density * Math.pow(r.beltVelocity, 2)) / 1e6).toFixed(4)}</td><td>N/mm²</td></tr>
                         <tr><td>Bending Stress</td><td>${((r.material.modulus * 4) / r.d1).toFixed(4)}</td><td>N/mm²</td></tr>
                         <tr style="border-top: 2px solid var(--primary-color);"><td><b>Total (σ_max)</b></td><td><b style="color: var(--accent-color);">${r.sigmaMax.toFixed(4)}</b></td><td>N/mm²</td></tr>
