@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flat Belt Drive Design Calculator</title>
+    <style>
+        :root {
+            --primary-color: #2a5caa;
+            --secondary-color: #1f4788;
+            --accent-color: #32b8c6;
+            --bg-light: #f8f9fa;
+            --bg-white: #ffffff;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --border-color: #e0e0e0;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --error-color: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section {
+            background: var(--bg-white);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+
+        .label-helper {
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: normal;
+            margin-left: 4px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(50, 184, 198, 0.1);
+        }
+
+        .input-unit {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .input-unit input {
+            flex: 1;
+        }
+
+        .unit-label {
+            min-width: 40px;
+            text-align: center;
+            color: var(--text-light);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2a9fa8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(50, 184, 198, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: #e0e0e0;
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: #d0d0d0;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            border-left: 4px solid var(--accent-color);
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .result-label {
+            font-size: 12px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .result-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .result-unit {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-left: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+
+        thead {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tbody tr:hover {
+            background-color: var(--bg-light);
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            color: var(--text-light);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            color: var(--accent-color);
+            border-bottom-color: var(--accent-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-light);
+            font-size: 12px;
+            margin-top: 30px;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 20px 0;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-grid {
+                gap: 15px;
+            }
+            
+            .section {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚙️ Flat Belt Drive Design Calculator</h1>
+            <p>PSG Data Book Based | 11-Stage Design Process | Real-Time Calculations</p>
+        </header>
+
+        <div class="alert alert-info">
+            <strong>📋 Guide:</strong> Enter input parameters on the left, results will calculate automatically. All values follow PSG Data Book standards (Pages 7.52, 7.53, 7.54, 5.21, 7.25).
+        </div>
+
+        <div class="main-grid">
+            <!-- INPUT SECTION -->
+            <div class="section">
+                <div class="section-title">Input Parameters</div>
+                
+                <div class="form-group">
+                    <label>Power <span class="label-helper">(kW)</span></label>
+                    <div class="input-unit">
+                        <input type="number" id="power" value="5" step="0.1" min="0.1">
+                        <span class="unit-label">kW</span>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="form-group">
+                        <label>Input Speed <span class="label-helper">(rpm)</span></label>
+                        <div class="input-unit">
+                            <input type="number" id="inputSpeed" value="1440" step="10" min="100">
+                            <span class="unit-label">rpm</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Output Speed <span class="label-helper">(rpm)</span></label>
+                        <div class="input-unit">
+                            <input type="number" id="outputSpeed" value="720" step="10" min="100">
+                            <span class="unit-label">rpm</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Centre Distance <span class="label-helper">(mm)</span></label>
+                    <div class="input-unit">
+                        <input type="number" id="centreDistance" value="2500" step="100" min="500">
+                        <span class="unit-label">mm</span>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="form-group">
+                        <label>Slip <span class="label-helper">(%)</span></label>
+                        <div class="input-unit">
+                            <input type="number" id="slip" value="2" step="0.1" min="0.5" max="5">
+                            <span class="unit-label">%</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Belt Material</label>
+                        <select id="material">
+                            <option value="canvas">Canvas (E=100, σ=1.8)</option>
+                            <option value="rubber">Rubber (E=80, σ=1.6)</option>
+                            <option value="leather">Leather (E=125, σ=1.8)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="form-group">
+                        <label>Drive Type</label>
+                        <select id="driveType">
+                            <option value="open">Open Drive</option>
+                            <option value="crossed">Crossed Drive</option>
+                            <option value="quarter">Quarter Turn Drive</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Coefficient of Friction (μ)</label>
+                        <input type="number" id="mu" value="0.25" step="0.01" min="0.15" max="0.4">
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="form-group">
+                    <label>Load Type</label>
+                    <select id="loadType">
+                        <option value="Normal">Normal (1.0)</option>
+                        <option value="Steady">Steady (1.2)</option>
+                        <option value="Intermittent">Intermittent (1.3)</option>
+                        <option value="Shock">Shock (1.5)</option>
+                    </select>
+                </div>
+
+                <div class="input-row">
+                    <div class="form-group">
+                        <label>K Factor (Pulley Calc)</label>
+                        <input type="number" id="kFactor" value="1250" step="50" min="1000" max="1300">
+                    </div>
+                    <div class="form-group">
+                        <label>Pull Factor (Φc)</label>
+                        <input type="number" id="pullFactor" value="0.55" step="0.01" min="0.5" max="0.65">
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="form-group">
+                        <label>Hours/Day</label>
+                        <input type="number" id="hoursPerDay" value="8" step="1" min="1" max="24">
+                    </div>
+                    <div class="form-group">
+                        <label>Days/Year</label>
+                        <input type="number" id="daysPerYear" value="300" step="10" min="100" max="365">
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="calculateDesign()">Calculate Design</button>
+                    <button class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                </div>
+            </div>
+
+            <!-- RESULTS SECTION -->
+            <div class="section">
+                <div class="section-title">Design Results</div>
+                <div id="resultsContainer"></div>
+            </div>
+        </div>
+
+        <!-- DETAILED RESULTS SECTION -->
+        <div class="section full-width">
+            <div class="tabs">
+                <button class="tab-button active" onclick="switchTab('bom')">Bill of Materials</button>
+                <button class="tab-button" onclick="switchTab('summary')">Design Summary</button>
+                <button class="tab-button" onclick="switchTab('details')">Detailed Analysis</button>
+            </div>
+
+            <div id="bom" class="tab-content active"></div>
+            <div id="summary" class="tab-content"></div>
+            <div id="details" class="tab-content"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2025 Flat Belt Drive Design Calculator | Based on PSG Data Book References</p>
+        <p>Mechanical Engineering | Machine Design & Analysis</p>
+    </div>
+
+    <script>
+        // Material Properties (PSG 7.52)
+        const materials = {
+            canvas: { name: 'Canvas', density: 1250, youngsModulus: 100, tensileStrength: 1.8 },
+            rubber: { name: 'Rubber', density: 1140, youngsModulus: 80, tensileStrength: 1.6 },
+            leather: { name: 'Leather', density: 1000, youngsModulus: 125, tensileStrength: 1.8 }
+        };
+
+        // Standard Pulley Diameters (PSG 7.54)
+        const standardPulleyDiameters = [40, 45, 50, 56, 63, 71, 80, 90, 100, 112, 125, 140, 160, 180, 200, 224, 250, 280, 315, 355, 400, 450, 500, 560, 630, 710, 800, 900, 1000, 1120, 1250, 1400, 1600, 1800, 2000];
+
+        // Standard Belt Widths (PSG 7.52)
+        const standardBeltWidths = [25, 32, 40, 44, 50, 63, 76, 90, 100, 112, 125, 140, 152, 180, 200, 224, 250, 305, 355, 400];
+
+        // Standard Shaft Diameters (PSG 7.25)
+        const standardShaftDiameters = [6, 7, 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 25, 28, 30, 32, 35, 40, 45, 50, 56, 60, 63, 70, 71, 80, 90, 100];
+
+        // Taper Key Dimensions (PSG 5.21)
+        const taperKeyDimensions = [
+            { minD: 6, maxD: 8, width: 2, thickness: 2 },
+            { minD: 8, maxD: 10, width: 3, thickness: 3 },
+            { minD: 10, maxD: 12, width: 4, thickness: 4 },
+            { minD: 12, maxD: 17, width: 5, thickness: 5 },
+            { minD: 17, maxD: 22, width: 6, thickness: 6 },
+            { minD: 22, maxD: 30, width: 8, thickness: 8 },
+            { minD: 30, maxD: 38, width: 10, thickness: 10 },
+            { minD: 38, maxD: 44, width: 12, thickness: 12 },
+            { minD: 44, maxD: 50, width: 14, thickness: 14 },
+            { minD: 50, maxD: 58, width: 16, thickness: 16 },
+            { minD: 58, maxD: 65, width: 18, thickness: 18 },
+            { minD: 65, maxD: 75, width: 20, thickness: 20 },
+            { minD: 75, maxD: 85, width: 22, thickness: 22 },
+            { minD: 85, maxD: 95, width: 25, thickness: 25 }
+        ];
+
+        // Load Correction Factors (PSG 7.53)
+        const loadFactors = { Normal: 1.0, Steady: 1.2, Intermittent: 1.3, Shock: 1.5 };
+
+        // Utility Functions
+        function findNearestStandard(value, standardList) {
+            const suitable = standardList.filter(s => s >= value);
+            return suitable.length > 0 ? suitable[0] : standardList[standardList.length - 1];
+        }
+
+        function getTaperKey(diameter) {
+            for (let key of taperKeyDimensions) {
+                if (diameter > key.minD && diameter <= key.maxD) {
+                    return key;
+                }
+            }
+            return null;
+        }
+
+        // Main Calculation Function
+        function calculateDesign() {
+            try {
+                // Get input values
+                const power = parseFloat(document.getElementById('power').value);
+                const inputSpeed = parseFloat(document.getElementById('inputSpeed').value);
+                const outputSpeed = parseFloat(document.getElementById('outputSpeed').value);
+                const centreDistance = parseFloat(document.getElementById('centreDistance').value);
+                const slip = parseFloat(document.getElementById('slip').value) / 100;
+                const materialType = document.getElementById('material').value;
+                const driveType = document.getElementById('driveType').value;
+                const mu = parseFloat(document.getElementById('mu').value);
+                const loadType = document.getElementById('loadType').value;
+                const kFactor = parseFloat(document.getElementById('kFactor').value);
+                const pullFactor = parseFloat(document.getElementById('pullFactor').value);
+                const hoursPerDay = parseFloat(document.getElementById('hoursPerDay').value);
+                const daysPerYear = parseFloat(document.getElementById('daysPerYear').value);
+
+                // Material properties
+                const material = materials[materialType];
+
+                // STAGE 3: Design Input Pulley
+                const d1Calculated = kFactor * Math.pow(power / inputSpeed, 1/3);
+                const d1 = findNearestStandard(d1Calculated, standardPulleyDiameters);
+
+                // STAGE 4: Design Output Pulley
+                const d2Calculated = d1 * (inputSpeed / outputSpeed) * (1 - slip);
+                const d2 = findNearestStandard(d2Calculated, standardPulleyDiameters);
+                const reductionRatio = d2 / d1;
+
+                // STAGE 5: Belt Length Calculation
+                let beltLength;
+                if (driveType === 'open') {
+                    beltLength = 2*centreDistance + (Math.PI/2)*(d2 + d1) + Math.pow(d2 - d1, 2)/(4*centreDistance);
+                } else if (driveType === 'crossed') {
+                    beltLength = 2*centreDistance + (Math.PI/2)*(d2 + d1) + Math.pow(d2 + d1, 2)/(4*centreDistance);
+                } else {
+                    beltLength = 2*centreDistance + (Math.PI/2)*(d2 + d1) + Math.sqrt(centreDistance**2 + d2**2) + Math.sqrt(centreDistance**2 + d1**2);
+                }
+                const beltLengthM = beltLength / 1000;
+
+                // STAGE 6: Force Analysis
+                const loadFactor = loadFactors[loadType];
+                const designPower = loadFactor * power;
+                const beltVelocity = (Math.PI * d1 * inputSpeed) / 60000;
+
+                // Angle of Lap
+                const angleOfLapDeg = 180 - ((d2 - d1) / centreDistance) * 60;
+                const angleOfLapRad = angleOfLapDeg * Math.PI / 180;
+
+                // Tensions
+                const tensionRatio = Math.exp(mu * angleOfLapRad);
+                const T2 = (designPower * 1000) / (beltVelocity * (tensionRatio - 1));
+                const T1 = tensionRatio * T2;
+
+                // STAGE 7: Belt Cross-Section
+                const sigmaTensile = material.tensileStrength;
+                const sigma_p = 2 * pullFactor * sigmaTensile;
+                const requiredArea = (T1 - T2) / sigma_p;
+
+                // Select Belt Ply
+                const plyOptions = [
+                    { ply: 4, thickness: 4 },
+                    { ply: 6, thickness: 6 },
+                    { ply: 8, thickness: 8 }
+                ];
+
+                let selectedPly = null;
+                for (let option of plyOptions) {
+                    const bWidth = requiredArea / option.thickness;
+                    const bStandard = findNearestStandard(bWidth, standardBeltWidths);
+                    if (!selectedPly || Math.abs(bStandard - bWidth) < Math.abs(selectedPly.width - (requiredArea / selectedPly.thickness))) {
+                        selectedPly = { ...option, width: bStandard };
+                    }
+                }
+
+                const actualArea = selectedPly.width * selectedPly.thickness;
+
+                // STAGE 8: Belt Life (CORRECTED FORMULA: 10^7 * L)
+                const sigma1 = 5; // Endurance strength for canvas
+                const sigmaTensileStress = (T1 - T2) / actualArea;
+                const sigmaCentrifugal = (material.density * Math.pow(beltVelocity, 2)) / 1e6;
+                const sigmaBending = (material.youngsModulus * selectedPly.thickness) / d1;
+                const sigmaMax = sigmaTensileStress + sigmaCentrifugal + sigmaBending;
+
+                let lifeHours = 0;
+                let lifeYears = 0;
+
+                // Belt Life Formula with validation (CORRECTED: 10^7 * L instead of 10 * L)
+                if (beltVelocity > 0 && sigmaMax > 0) {
+                    const x = 2;
+                    const m = 5;
+                    lifeHours = (Math.pow(10, 7) * beltLengthM) / (beltVelocity * 3600 * x) * Math.pow(sigma1 / sigmaMax, m);
+                    lifeYears = lifeHours / (hoursPerDay * daysPerYear);
+                }
+
+                // STAGE 9: Shaft Design
+                const designPowerW = designPower * 1000;
+                const inputTorque = (designPowerW * 60) / (2 * Math.pi * inputSpeed);
+                const outputTorque = (designPowerW * 60) / (2 * Math.pi * outputSpeed);
+
+                const shearStress = 50;
+                const inputShaftDia = Math.pow((16 * inputTorque * 1000) / (Math.PI * shearStress), 1/3);
+                const outputShaftDia = Math.pow((16 * outputTorque * 1000) / (Math.PI * shearStress), 1/3);
+
+                const inputShaftDiaStandard = findNearestStandard(inputShaftDia, standardShaftDiameters);
+                const outputShaftDiaStandard = findNearestStandard(outputShaftDia, standardShaftDiameters);
+
+                // Taper Keys
+                const inputKey = getTaperKey(inputShaftDiaStandard);
+                const outputKey = getTaperKey(outputShaftDiaStandard);
+
+                // Store results
+                const results = {
+                    power, inputSpeed, outputSpeed, centreDistance, slip: slip*100, material, driveType,
+                    d1, d2, reductionRatio, beltLength, beltLengthM, beltVelocity,
+                    angleOfLapDeg, angleOfLapRad, loadFactor, designPower, T1, T2, tensionRatio,
+                    selectedPly, actualArea, sigmaMax, lifeHours, lifeYears,
+                    inputTorque, outputTorque, inputShaftDiaStandard, outputShaftDiaStandard,
+                    inputKey, outputKey, sigma_p, requiredArea, sigmaTensileStress, sigmaCentrifugal, sigmaBending
+                };
+
+                displayResults(results);
+                
+            } catch (e) {
+                alert('Error in calculation: ' + e.message);
+                console.error(e);
+            }
+        }
+
+        // Display Results
+        function displayResults(r) {
+            // Quick Results Cards
+            const resultsHTML = `
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-label">Input Pulley Ø</div>
+                        <div class="result-value">${r.d1}<span class="result-unit">mm</span></div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">Output Pulley Ø</div>
+                        <div class="result-value">${r.d2}<span class="result-unit">mm</span></div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">Reduction Ratio</div>
+                        <div class="result-value">${r.reductionRatio.toFixed(3)}</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">Belt Speed</div>
+                        <div class="result-value">${r.beltVelocity.toFixed(3)}<span class="result-unit">m/s</span></div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">Belt Width</div>
+                        <div class="result-value">${r.selectedPly.width}<span class="result-unit">mm</span></div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">🎯 Belt Life</div>
+                        <div class="result-value" style="color: #28a745;">${r.lifeYears.toFixed(4)}<span class="result-unit">yrs</span></div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">Input Shaft Ø</div>
+                        <div class="result-value">${r.inputShaftDiaStandard}<span class="result-unit">mm</span></div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">Output Shaft Ø</div>
+                        <div class="result-value">${r.outputShaftDiaStandard}<span class="result-unit">mm</span></div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('resultsContainer').innerHTML = resultsHTML;
+
+            // Bill of Materials
+            const bomHTML = `
+                <h3 style="color: var(--primary-color); margin-bottom: 15px;">Bill of Materials</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sr. No.</th>
+                            <th>Component</th>
+                            <th>Specification</th>
+                            <th>Material</th>
+                            <th>Qty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Input Pulley</td>
+                            <td>${r.d1} mm Ø</td>
+                            <td>Cast Iron</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Output Pulley</td>
+                            <td>${r.d2} mm Ø</td>
+                            <td>Cast Iron</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Flat Belt</td>
+                            <td>${r.material.name} (${r.selectedPly.ply} ply) - ${r.selectedPly.width}×${r.selectedPly.thickness}mm</td>
+                            <td>${r.material.name}</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Input Shaft</td>
+                            <td>${r.inputShaftDiaStandard} mm Ø</td>
+                            <td>C-40 Steel</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Output Shaft</td>
+                            <td>${r.outputShaftDiaStandard} mm Ø</td>
+                            <td>C-40 Steel</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Input Shaft Taper Key</td>
+                            <td>${r.inputKey ? r.inputKey.width+'×'+r.inputKey.thickness+' mm' : 'N/A'}</td>
+                            <td>Steel</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Output Shaft Taper Key</td>
+                            <td>${r.outputKey ? r.outputKey.width+'×'+r.outputKey.thickness+' mm' : 'N/A'}</td>
+                            <td>Steel</td>
+                            <td>1</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+            document.getElementById('bom').innerHTML = bomHTML;
+
+            // Design Summary
+            const summaryHTML = `
+                <h3 style="color: var(--primary-color); margin-bottom: 15px;">Design Summary</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Value</th>
+                            <th>Unit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Power (Input)</td><td>${r.power}</td><td>kW</td></tr>
+                        <tr><td>Design Power</td><td>${r.designPower.toFixed(2)}</td><td>kW</td></tr>
+                        <tr><td>Input Speed</td><td>${r.inputSpeed}</td><td>rpm</td></tr>
+                        <tr><td>Output Speed</td><td>${r.outputSpeed}</td><td>rpm</td></tr>
+                        <tr><td>Actual Reduction Ratio</td><td>${r.reductionRatio.toFixed(3)}</td><td>-</td></tr>
+                        <tr><td>Input Pulley Diameter</td><td>${r.d1}</td><td>mm</td></tr>
+                        <tr><td>Output Pulley Diameter</td><td>${r.d2}</td><td>mm</td></tr>
+                        <tr><td>Belt Length</td><td>${r.beltLengthM.toFixed(3)}</td><td>m</td></tr>
+                        <tr><td>Belt Material</td><td>${r.material.name}</td><td>-</td></tr>
+                        <tr><td>Belt Ply</td><td>${r.selectedPly.ply}</td><td>-</td></tr>
+                        <tr><td>Belt Width</td><td>${r.selectedPly.width}</td><td>mm</td></tr>
+                        <tr><td>Belt Thickness</td><td>${r.selectedPly.thickness}</td><td>mm</td></tr>
+                        <tr><td>Belt Velocity</td><td>${r.beltVelocity.toFixed(3)}</td><td>m/s</td></tr>
+                        <tr><td>Angle of Lap</td><td>${r.angleOfLapDeg.toFixed(2)}</td><td>°</td></tr>
+                        <tr><td>Tension Ratio (T₁/T₂)</td><td>${r.tensionRatio.toFixed(4)}</td><td>-</td></tr>
+                        <tr><td>Tight Side Tension (T₁)</td><td>${r.T1.toFixed(2)}</td><td>N</td></tr>
+                        <tr><td>Slack Side Tension (T₂)</td><td>${r.T2.toFixed(2)}</td><td>N</td></tr>
+                        <tr><td>Belt Cross-section Area</td><td>${r.actualArea.toFixed(2)}</td><td>mm²</td></tr>
+                        <tr><td>Maximum Stress</td><td>${r.sigmaMax.toFixed(4)}</td><td>N/mm²</td></tr>
+                        <tr><td style="color: var(--success-color); font-weight: bold;"><strong>Belt Life (Hours)</strong></td><td style="color: var(--success-color); font-weight: bold;"><strong>${r.lifeHours.toFixed(2)}</strong></td><td>hours</td></tr>
+                        <tr><td style="color: var(--success-color); font-weight: bold;"><strong>Belt Life (Years)</strong></td><td style="color: var(--success-color); font-weight: bold;"><strong>${r.lifeYears.toFixed(4)}</strong></td><td>years</td></tr>
+                        <tr><td>Input Shaft Diameter</td><td>${r.inputShaftDiaStandard}</td><td>mm</td></tr>
+                        <tr><td>Input Shaft Torque</td><td>${r.inputTorque.toFixed(2)}</td><td>Nm</td></tr>
+                        <tr><td>Output Shaft Diameter</td><td>${r.outputShaftDiaStandard}</td><td>mm</td></tr>
+                        <tr><td>Output Shaft Torque</td><td>${r.outputTorque.toFixed(2)}</td><td>Nm</td></tr>
+                    </tbody>
+                </table>
+            `;
+            document.getElementById('summary').innerHTML = summaryHTML;
+
+            // Detailed Analysis
+            const detailsHTML = `
+                <h3 style="color: var(--primary-color); margin-bottom: 15px;">Detailed Stress Analysis</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                    <div>
+                        <h4 style="color: var(--secondary-color); margin-bottom: 10px;">Stress Components</h4>
+                        <table>
+                            <tr><td>Tensile Stress</td><td style="text-align: right;"><strong>${r.sigmaTensileStress.toFixed(4)}</strong> N/mm²</td></tr>
+                            <tr><td>Centrifugal Stress</td><td style="text-align: right;"><strong>${r.sigmaCentrifugal.toFixed(4)}</strong> N/mm²</td></tr>
+                            <tr><td>Bending Stress</td><td style="text-align: right;"><strong>${r.sigmaBending.toFixed(4)}</strong> N/mm²</td></tr>
+                            <tr style="border-top: 2px solid var(--primary-color);"><td><strong>Total (σ_max)</strong></td><td style="text-align: right;"><strong style="color: var(--accent-color);">${r.sigmaMax.toFixed(4)}</strong> N/mm²</td></tr>
+                        </table>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--secondary-color); margin-bottom: 10px;">Belt Life Calculation</h4>
+                        <table>
+                            <tr><td>Formula</td><td style="text-align: right;"><strong>H = 10⁷ × L / (V × 3600 × x) × (σ₋₁/σ_max)^m</strong></td></tr>
+                            <tr><td>Belt Length (L)</td><td style="text-align: right;"><strong>${r.beltLengthM.toFixed(3)}</strong> m</td></tr>
+                            <tr><td>Belt Velocity (V)</td><td style="text-align: right;"><strong>${r.beltVelocity.toFixed(3)}</strong> m/s</td></tr>
+                            <tr><td>Endurance Strength (σ₋₁)</td><td style="text-align: right;"><strong>5</strong> N/mm²</td></tr>
+                            <tr><td>Max Stress (σ_max)</td><td style="text-align: right;"><strong>${r.sigmaMax.toFixed(4)}</strong> N/mm²</td></tr>
+                            <tr><td style="border-top: 2px solid var(--primary-color);"><strong>Life (Hours)</strong></td><td style="text-align: right; border-top: 2px solid var(--primary-color);"><strong style="color: var(--accent-color);">${r.lifeHours.toFixed(2)}</strong> hrs</td></tr>
+                            <tr><td><strong>Life (Years)</strong></td><td style="text-align: right;"><strong style="color: var(--accent-color);">${r.lifeYears.toFixed(4)}</strong> yrs</td></tr>
+                        </table>
+                    </div>
+                </div>
+            `;
+            document.getElementById('details').innerHTML = detailsHTML;
+        }
+
+        // Tab Switching
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            buttons.forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Reset Form
+        function resetForm() {
+            document.getElementById('power').value = '5';
+            document.getElementById('inputSpeed').value = '1440';
+            document.getElementById('outputSpeed').value = '720';
+            document.getElementById('centreDistance').value = '2500';
+            document.getElementById('slip').value = '2';
+            document.getElementById('material').value = 'canvas';
+            document.getElementById('driveType').value = 'open';
+            document.getElementById('mu').value = '0.25';
+            document.getElementById('loadType').value = 'Normal';
+            document.getElementById('kFactor').value = '1250';
+            document.getElementById('pullFactor').value = '0.55';
+            document.getElementById('resultsContainer').innerHTML = '<p style="color: var(--text-light);">Click "Calculate Design" to see results...</p>';
+            document.getElementById('bom').innerHTML = '';
+            document.getElementById('summary').innerHTML = '';
+            document.getElementById('details').innerHTML = '';
+        }
+
+        // Initialize
+        window.onload = function() {
+            document.getElementById('resultsContainer').innerHTML = '<p style="color: var(--text-light);">Click "Calculate Design" to see results...</p>';
+        };
+
+        // Auto-calculate on input change
+        document.addEventListener('change', function(e) {
+            if (e.target.matches('input[type="number"], select')) {
+                setTimeout(calculateDesign, 500);
+            }
+        });
+    </script>
+</body>
+</html>
